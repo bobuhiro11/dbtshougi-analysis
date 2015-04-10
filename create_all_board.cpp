@@ -270,7 +270,6 @@ int is_win_state(board b)
  */
 int is_lose_state(board b)
 {
-    struct point lion_pos;
     int j;
 
     if (is_win_state(b))
@@ -288,7 +287,7 @@ int is_lose_state(board b)
  */
 void write_board(board b)
 {
-    unsigned int i,j,c,belong,animal,c_animal,n;
+    unsigned int i,j,c,belong,animal,c_animal;
 
     fprintf(stderr, "======================================\n");
     fprintf(stderr, "binary expression: %016lx\n", b);
@@ -417,7 +416,7 @@ int main(int argc, char *argv[])
     vector<board> all_state;
     deque<board>  q;
     set<board>  h;
-    int MAX_BOARD_NUM;
+    unsigned int MAX_BOARD_NUM;
 
     vector<board> next_boards;
 
