@@ -5,5 +5,5 @@
 
 cd $PBS_O_WORKDIR # qsubを実行したディレクトリへ移動
 
-g++ -DMAX_BOARD_NUM=300000000 create_all_board.cpp
-./a.out
+g++ create_all_board.cpp
+./a.out 300

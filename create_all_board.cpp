@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <limits.h>
 #include <vector>
 #include <iostream>
@@ -6,10 +8,6 @@
 #include <deque>
 #include <set>
 #include <algorithm>
-
-#ifndef MAX_BOARD_NUM
-    #define MAX_BOARD_NUM 100
-#endif
 
 #define HIYOKO    0x1 // (0b001)
 #define KIRIN     0x2 // (0b010)
@@ -63,7 +61,7 @@ struct point niwatori_movable[] = {{-1,0},{+1,0},{0,-1},{0,+1},{-1,-1},{-1,+1}};
  *
  * LSB（最下位ビット）
  */
-typedef unsigned long int board;
+typedef uint64_t board;
 
 /*
  * 盤面上のセルに関する操作
@@ -414,17 +412,24 @@ board get_reverse(board b)
 }
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
     vector<board> all_state;
     deque<board>  q;
     set<board>  h;
+    int MAX_BOARD_NUM;
 
     vector<board> next_boards;
 
     unsigned int i, j, n;
     board b;
     set<board>::iterator iter;
+
+    if (argc == 2) {
+        MAX_BOARD_NUM = atoi(argv[1]);
+    } else{
+        MAX_BOARD_NUM = 10;
+    }
 
     b = get_init_board();
     write_board(b);
