@@ -66,6 +66,10 @@ typedef uint64_t board;
 #define GET_ANIMAL(c)      ((c) & 0x7)
 #define GET_BELONG(c)      ((c) & 0x8)
 
+#define UNKNOWN 1
+#define WIN     2
+#define LOSE    3
+
 void get_empty_cell(vector<struct point> &v, board b);
 void get_movable(vector<struct point> &v, board b, unsigned int i, unsigned int j);
 board add_hand(board b, unsigned int animal, unsigned int belong);
@@ -78,5 +82,7 @@ int is_lose_state(board b);
 void write_board(board b);
 void get_next_board(vector<board> &v, board b);
 board get_reverse(board b);
+unsigned long get_file_size(const char *filename);
+unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsigned char> &judge);
 
 #endif

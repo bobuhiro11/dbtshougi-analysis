@@ -20,56 +20,6 @@
 #include <algorithm>
 #include "common.h"
 
-#define UNKNOWN 1
-#define WIN     2
-#define LOSE    3
-
-/*
- * ファイルサイズ（バイト数）を取得
- */
-unsigned long get_file_size(const char *filename) {
-    int fd = open(filename, O_RDONLY);
-    struct stat statbuf;
-    fstat(fd, &statbuf);
-    close(fd);
-    return (unsigned long) statbuf.st_size;
-}
-
-/*
- * その局面が負け局面か勝ち局面か判定
- */
-unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsigned char> &judge)
-{
-    bool all_win = true;
-    vector<board> next_boards;
-    unsigned int n;
-
-    get_next_board(next_boards, b);
-    n = next_boards.size();
-
-    for (int i=0; i<n; i++) {
-        board nb = next_boards[i];
-
-        // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
-        if (judge[nb] == LOSE || is_lose_state(nb)) {
-            return WIN;
-        } else if (judge[nb] == WIN || is_win_state(nb)) {
-        } else if (judge[nb] == UNKNOWN) {
-            all_win = false;
-        } else {
-            // 想定していない局面
-            fprintf(stderr, "ERROR: %016ld is unpredictable board.", nb);
-        }
-    }
-
-    // 次の局面が全て勝ち局面になるなら，今の局面は負け局面
-    if (all_win) {
-        return LOSE;
-    }
-
-    return UNKNOWN;
-}
-
 int main(int argc, char *argv[])
 {
     unsigned long MAX_ITER_NUM = 0;

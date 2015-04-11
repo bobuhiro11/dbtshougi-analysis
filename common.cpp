@@ -1,12 +1,21 @@
+/*
+ * 共通する操作
+ */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
+#include <time.h>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <deque>
 #include <set>
+#include <map>
 #include <algorithm>
 #include "common.h"
 
@@ -17,7 +26,7 @@ struct point     lion_movable[] = {{-1,0},{+1,0},{0,-1},{0,+1},{-1,-1},{-1,+1},{
 struct point niwatori_movable[] = {{-1,0},{+1,0},{0,-1},{0,+1},{-1,-1},{-1,+1}};
 
 /*
- * $B$I$&$V$D$N$$$J$$6u$$$?%;%k$N0lMw(B
+ * どうぶつのいない空いたセルの一覧
  */
 void get_empty_cell(vector<struct point> &v, board b)
 {
@@ -37,7 +46,7 @@ void get_empty_cell(vector<struct point> &v, board b)
 }
 
 /*
- * $B:BI8(B(i,j)$B$K$$$k$I$&$V$D$,F0$1$k:BI8$N0lMw(B
+ * 座標(i,j)にいるどうぶつが動ける座標の一覧
  */
 void get_movable(vector<struct point> &v, board b, unsigned int i, unsigned int j)
 {
@@ -77,7 +86,7 @@ void get_movable(vector<struct point> &v, board b, unsigned int i, unsigned int 
 }
 
 /*
- * $B$I$&$V$D$r;}$A%4%^$K2C$($k(B
+ * どうぶつを持ちゴマに加える
  */
 board add_hand(board b, unsigned int animal, unsigned int belong)
 {
@@ -97,7 +106,7 @@ board add_hand(board b, unsigned int animal, unsigned int belong)
 }
 
 /*
- * $B$I$&$V$D$r;}$A%4%^$+$i>C$9(B
+ * どうぶつを持ちゴマから消す
  */
 board remove_hand(board b, unsigned int animal, unsigned int belong)
 {
@@ -114,7 +123,7 @@ board remove_hand(board b, unsigned int animal, unsigned int belong)
 }
 
 /*
- * $B;}$A%4%^$K$"$k$I$&$V$D$N?t(B
+ * 持ちゴマにあるどうぶつの数
  */
 unsigned int get_hand_num(board b, unsigned int animal, unsigned int belong)
 {
@@ -134,7 +143,7 @@ unsigned int get_hand_num(board b, unsigned int animal, unsigned int belong)
 }
 
 /*
- * $BHWLL$r=i4|2=$9$k(B
+ * 盤面を初期化する
  */
 board get_init_board(void)
 {
@@ -153,17 +162,17 @@ board get_init_board(void)
 }
 
 /*
- * $BHWLL$r@55,2=$9$k(B
- * - $B:81&$rH?E>(B
- * - $B<j;}$A$b@55,2=(B
- * - $B$G$-$k$@$1>.$5$JCM$K(B
+ * 盤面を正規化する
+ * - 左右を反転
+ * - 手持ちも正規化
+ * - できるだけ小さな値に
  */
 board regulate(board b)
 {
     board new_b = b;
     int i;
 
-    // $BHWLL$r=i4|2=(B
+    // 盤面を初期化
     for (i=0;i<HEIGHT;i++) {
        new_b = SET_CELL(new_b, i,  WIDTH-1, GET_CELL(b, i,       0));
        new_b = SET_CELL(new_b, i,        0, GET_CELL(b, i, WIDTH-1));
@@ -171,7 +180,7 @@ board regulate(board b)
     new_b = (new_b < b) ? new_b : b;
     new_b = new_b & 0xFFFFFFFFFFFF;
 
-    // $B;}$A%4%^$r=i4|2=(B
+    // 持ちゴマを初期化
     int my_hiyoko   = get_hand_num(b, HIYOKO, MY_HAND);
     int my_kirin    = get_hand_num(b, KIRIN,  MY_HAND);
     int my_zou      = get_hand_num(b, ZOU,    MY_HAND);
@@ -190,9 +199,9 @@ board regulate(board b)
 }
 
 /*
- * $B>!$A3NDj6ILL$+$I$&$+(B
+ * 勝ち確定局面かどうか
  *
- * $B>!$A3NDj6ILL(B = $B<jHV$N%W%l%$%d$,$"$$$F$N%i%$%*%s$rJa$^$($i$l$k>uBV(B
+ * 勝ち確定局面 = 手番のプレイヤがあいてのライオンを捕まえられる状態
  */
 int is_win_state(board b)
 {
@@ -217,9 +226,9 @@ int is_win_state(board b)
 }
 
 /*
- * $BIi$13NDj6ILL$+$I$&$+(B
+ * 負け確定局面かどうか
  *
- * $BIi$13NDj6ILL(B = $B>!$A3NDj6ILL$G$J$/!$$"$$$F$N%i%$%*%s$,<+?X?<$/$K$$$k>uBV(B
+ * 負け確定局面 = 勝ち確定局面でなく，あいてのライオンが自陣深くにいる状態
  */
 int is_lose_state(board b)
 {
@@ -236,7 +245,7 @@ int is_lose_state(board b)
 }
 
 /*
- * $BHWLL$r8+$d$9$/@07A$7$F!$%3%s%=!<%k$K=PNO(B
+ * 盤面を見やすく整形して，コンソールに出力
  */
 void write_board(board b)
 {
@@ -279,7 +288,7 @@ void write_board(board b)
 }
 
 /*
- * $B$"$kHWLL$+$i?d0\$G$-$kHWLL$N0lMw(B
+ * ある盤面から推移できる盤面の一覧
  */
 void get_next_board(vector<board> &v, board b)
 {
@@ -288,7 +297,7 @@ void get_next_board(vector<board> &v, board b)
     board new_b;
 
 
-    // $B$I$&$V$D$rF0$+$9$3$H$GHWLL$r?d0\$9$k(B
+    // どうぶつを動かすことで盤面を推移する
     for (i=0; i<HEIGHT; i++) {
         for (j=0; j<WIDTH; j++) {
             vec_movable.clear();
@@ -296,11 +305,11 @@ void get_next_board(vector<board> &v, board b)
 
             get_movable(vec_movable, b, i, j);
             for (k=0; k<vec_movable.size(); k++) {
-                // $B$I$&$V$D$r0\F0(B
+                // どうぶつを移動
                 n_c = (GET_ANIMAL(c) == HIYOKO && vec_movable[k].y == 0) ? (MY_CELL | NIWATORI) : c;
                 new_b      = SET_CELL(CLEAR_CELL(b, i, j), vec_movable[k].y, vec_movable[k].x, n_c);
 
-                // $B?7$?$K<j$KF~$l$?$I$&$V$D(B
+                // 新たに手に入れたどうぶつ
                 get_animal = GET_ANIMAL(GET_CELL(b,vec_movable[k].y,vec_movable[k].x));
                 if (get_animal == NIWATORI)
                     get_animal = HIYOKO;
@@ -312,7 +321,7 @@ void get_next_board(vector<board> &v, board b)
         }
     }
 
-    // $B$I$&$V$D$r;}$A%4%^$+$iBG$D$3$H$GHWLL$r?d0\$9$k(B
+    // どうぶつを持ちゴマから打つことで盤面を推移する
     get_empty_cell(vec_empty, b);
     for (animal=HIYOKO; animal<=ZOU; animal++) {
         n = get_hand_num(b, animal, MY_HAND);
@@ -332,18 +341,18 @@ board get_reverse(board b)
     board p;
     board new_b = b;
 
-    // $B<j;}$A$N%3%^$b8r49$9$k(B
+    // 手持ちのコマも交換する
     p = ((board)0xFFF) << 48;
     new_b = p ^ new_b;
 
-    // 0b11$B$K$J$C$A$c$C$?$H$3$m$r(B0b00$B$K$b$I$9(B
+    // 0b11になっちゃったところを0b00にもどす
     for (i=0; i<6; i++) {
         if (((new_b >> (2*i + 48)) & 0x3) == 0x3) {
             new_b = new_b & (~(((board)0x3) << (2*i+48)));
         }
     }
 
-    // $BHWLL$N$I$&$V$D$r8r49$9$k(B
+    // 盤面のどうぶつを交換する
     for (i=0; i<HEIGHT; i++) {
         for (j=0; j<WIDTH; j++) {
             ni = HEIGHT -i -1;
@@ -359,4 +368,50 @@ board get_reverse(board b)
     }
 
     return new_b;
+}
+
+/*
+ * ファイルサイズ（バイト数）を取得
+ */
+unsigned long get_file_size(const char *filename) {
+    int fd = open(filename, O_RDONLY);
+    struct stat statbuf;
+    fstat(fd, &statbuf);
+    close(fd);
+    return (unsigned long) statbuf.st_size;
+}
+
+/*
+ * その局面が負け局面か勝ち局面か判定
+ */
+unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsigned char> &judge)
+{
+    bool all_win = true;
+    vector<board> next_boards;
+    unsigned int n;
+
+    get_next_board(next_boards, b);
+    n = next_boards.size();
+
+    for (int i=0; i<n; i++) {
+        board nb = next_boards[i];
+
+        // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
+        if (judge[nb] == LOSE || is_lose_state(nb)) {
+            return WIN;
+        } else if (judge[nb] == WIN || is_win_state(nb)) {
+        } else if (judge[nb] == UNKNOWN) {
+            all_win = false;
+        } else {
+            // 想定していない局面
+            fprintf(stderr, "ERROR: %016ld is unpredictable board.", nb);
+        }
+    }
+
+    // 次の局面が全て勝ち局面になるなら，今の局面は負け局面
+    if (all_win) {
+        return LOSE;
+    }
+
+    return UNKNOWN;
 }

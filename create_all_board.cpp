@@ -3,15 +3,21 @@
  * 取得する．１つの盤面は64ビットで表現され，２GB
  * 強程度のファイル（all-state.dat）を出力する．
  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
+#include <time.h>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <deque>
 #include <set>
+#include <map>
 #include <algorithm>
 #include "common.h"
 
