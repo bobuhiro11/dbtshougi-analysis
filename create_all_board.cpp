@@ -207,12 +207,8 @@ board get_init_board(void)
     b = SET_CELL(b,3,1, (MY_CELL  | LION));
     b = SET_CELL(b,3,2, (MY_CELL  | KIRIN));
 
-    //b = SET_CELL(b,0,0, (YOUR_CELL| KIRIN));
-    //b = SET_CELL(b,3,2, (YOUR_CELL| LION));
-    //b = SET_CELL(b,1,1, (MY_CELL  | HIYOKO));
-    //b = SET_CELL(b,1,0, (MY_CELL  | HIYOKO));
-    //b = SET_CELL(b,3,1, (MY_CELL  | ZOU));
-    //b = SET_CELL(b,3,0, (MY_CELL  | LION));
+    //b = SET_CELL(b,0,1, (YOUR_CELL| LION));
+    //b = SET_CELL(b,3,1, (MY_CELL  | LION));
 
     //b = add_hand(b, KIRIN, MY_HAND);
     //b = add_hand(b, ZOU, MY_HAND);
@@ -431,6 +427,7 @@ int main(int argc, char *argv[])
     }
 
     b = get_init_board();
+    b = regulate(b);
     write_board(b);
 
     i = 0;
@@ -455,7 +452,8 @@ int main(int argc, char *argv[])
 
                 for (j=0; j<n; j++) {
                     // ちゃんと正規化して，手番を合わせて保存
-                    b = regulate(get_reverse(next_boards[j]));
+                    b = get_reverse(next_boards[j]);
+                    b = regulate(b);
                     q.push_back(b);
                 }
             }

@@ -6,4 +6,4 @@
 cd $PBS_O_WORKDIR # qsubを実行したディレクトリへ移動
 
 g++ create_all_board.cpp
-./a.out 300
+./a.out 300000000
