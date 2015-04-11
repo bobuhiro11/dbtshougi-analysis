@@ -394,7 +394,9 @@ unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsign
     n = next_boards.size();
 
     for (int i=0; i<n; i++) {
-        board nb = next_boards[i];
+        // 次の盤面を取得し，反転・正規化
+        board nb = get_reverse(next_boards[i]);
+        nb = regulate(nb);
 
         // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
         if (judge[nb] == LOSE || is_lose_state(nb)) {

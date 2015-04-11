@@ -36,25 +36,17 @@ int main(int argc, char *argv[])
         MAX_ITER_NUM = atoi(argv[1]);
     }
 
-    // 全ての局面（末端局面を除く） all-state-removeend.dat の読込
-    file_size     = get_file_size("all-state-removeend.dat");
+    // 全ての局面（末端局面を除く） all-state_removeend.dat の読込
+    file_size     = get_file_size("all-state_removeend.dat");
     all_state_num = file_size / sizeof(board);
     all_state.resize(all_state_num);
-    ifstream ifs("all-state.dat");
+    ifstream ifs("all-state_removeend.dat");
     ifs.read((char*)&all_state[0], all_state.size() * sizeof(board));
 
     for (int i=0; i<all_state_num; i++) {
         board b = all_state[i];
-        if (is_win_state(b)) {
-            judge[b] = WIN;
-            count[WIN]++;
-        } else if (is_lose_state(b)) {
-            judge[b] = LOSE;
-            count[LOSE]++;
-        } else {
-            judge[b] = UNKNOWN;
-            count[UNKNOWN]++;
-        }
+        judge[b] = UNKNOWN;
+        count[UNKNOWN]++;
     }
 
     // 繰り返し勝敗データを更新していく
