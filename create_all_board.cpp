@@ -207,29 +207,44 @@ board get_init_board(void)
     b = SET_CELL(b,3,1, (MY_CELL  | LION));
     b = SET_CELL(b,3,2, (MY_CELL  | KIRIN));
 
-    //b = SET_CELL(b,0,1, (YOUR_CELL| LION));
-    //b = SET_CELL(b,3,1, (MY_CELL  | LION));
-
-    //b = add_hand(b, KIRIN, MY_HAND);
-    //b = add_hand(b, ZOU, MY_HAND);
-    //b = add_hand(b, ZOU, YOUR_HAND);
-
     return b;
 }
 
 /*
- * 盤面を左右反転して，正規化する
+ * 盤面を正規化する
+ * - 左右を反転
+ * - 手持ちも正規化
+ * - できるだけ小さな値に
  */
 board regulate(board b)
 {
     board new_b = b;
     int i;
 
+    // 盤面を初期化
     for (i=0;i<HEIGHT;i++) {
        new_b = SET_CELL(new_b, i,  WIDTH-1, GET_CELL(b, i,       0));
        new_b = SET_CELL(new_b, i,        0, GET_CELL(b, i, WIDTH-1));
     }
-    return (new_b < b) ? new_b : b;
+    new_b = (new_b < b) ? new_b : b;
+    new_b = new_b & 0xFFFFFFFFFFFF;
+
+    // 持ちゴマを初期化
+    int my_hiyoko   = get_hand_num(b, HIYOKO, MY_HAND);
+    int my_kirin    = get_hand_num(b, KIRIN,  MY_HAND);
+    int my_zou      = get_hand_num(b, ZOU,    MY_HAND);
+    int your_hiyoko = get_hand_num(b, HIYOKO, YOUR_HAND);
+    int your_kirin  = get_hand_num(b, KIRIN,  YOUR_HAND);
+    int your_zou    = get_hand_num(b, ZOU,    YOUR_HAND);
+
+    for (i=0;i<your_hiyoko;i++) new_b = add_hand(new_b, HIYOKO, YOUR_HAND);
+    for (i=0;i<your_kirin;i++)  new_b = add_hand(new_b, KIRIN,  YOUR_HAND);
+    for (i=0;i<your_zou;i++)    new_b = add_hand(new_b, ZOU,    YOUR_HAND);
+    for (i=0;i<my_hiyoko;i++)   new_b = add_hand(new_b, HIYOKO, MY_HAND);
+    for (i=0;i<my_kirin;i++)    new_b = add_hand(new_b, KIRIN,  MY_HAND);
+    for (i=0;i<my_zou;i++)      new_b = add_hand(new_b, ZOU,    MY_HAND);
+
+    return new_b;
 }
 
 /*
@@ -427,6 +442,7 @@ int main(int argc, char *argv[])
     }
 
     b = get_init_board();
+    write_board(b);
     b = regulate(b);
     write_board(b);
 
