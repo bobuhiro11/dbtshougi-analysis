@@ -382,9 +382,35 @@ unsigned long get_file_size(const char *filename) {
 }
 
 /*
+ * all_state から bを検索して，添字を返す
+ */
+int bin_search(vector<board> &all_state, board b)
+{
+    int min = 0;
+    int max = all_state.size() - 1;
+    int mid;
+
+    while(min<=max){
+
+        mid=(min+max)/2;
+
+        if(all_state[mid]==b){
+            return mid;
+        }else if(all_state[mid]<b){
+            min=mid+1;
+
+        }else if(all_state[mid]>b){
+            max=mid-1;
+        }
+    }
+
+    return -1;
+}
+
+/*
  * その局面が負け局面か勝ち局面か判定
  */
-unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsigned char> &judge)
+unsigned char get_winorlose(board b, vector<board> &all_state, vector<unsigned char> &judge)
 {
     bool all_win = true;
     vector<board> next_boards;
@@ -397,12 +423,13 @@ unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsign
         // 次の盤面を取得し，反転・正規化
         board nb = get_reverse(next_boards[i]);
         nb = regulate(nb);
+        int index = bin_search(all_state, nb);
 
         // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
-        if (judge[nb] == LOSE || is_lose_state(nb)) {
+        if (judge[index] == LOSE || is_lose_state(nb)) {
             return WIN;
-        } else if (judge[nb] == WIN || is_win_state(nb)) {
-        } else if (judge[nb] == UNKNOWN) {
+        } else if (judge[index] == WIN || is_win_state(nb)) {
+        } else if (judge[index] == UNKNOWN) {
             all_win = false;
         } else {
             // 想定していない局面

@@ -83,6 +83,7 @@ void write_board(board b);
 void get_next_board(vector<board> &v, board b);
 board get_reverse(board b);
 unsigned long get_file_size(const char *filename);
-unsigned char get_winorlose(board b, vector<board> &all_state, map<board, unsigned char> &judge);
+unsigned char get_winorlose(board b, vector<board> &all_state, vector<unsigned char> &judge);
+int bin_search(vector<board> &all_state, board b);
 
 #endif
