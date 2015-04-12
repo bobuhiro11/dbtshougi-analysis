@@ -39,7 +39,11 @@ int main(int argc, char *argv[])
         }
     }
 
+    // ソート
+    sort(all_state_removeend.begin(), all_state_removeend.end());
+
     // 末端局面を含まない all-state-removeend.dat に書込
+    // 今後は all_state_removeend.dat を使って解析していく
     fprintf(stderr, "num of all-state-removeend = %ld\n", all_state_removeend.size());
     ofstream ofs("all-state_removeend.dat");
     ofs.write((char *)&all_state_removeend[0],all_state_removeend.size()*sizeof(board));
