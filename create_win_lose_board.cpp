@@ -92,25 +92,27 @@ int main(int argc, char *argv[])
             }
         }
 
-        printf("---------------------\n", iter_num);
-        printf("iter_num: %d\n", iter_num);
-        printf("win_add_num: %d\n", win_add_num);
-        printf("lose_add_num: %d\n", lose_add_num);
+        //printf("---------------------\n");
+        //printf("iter_num: %ld\n", iter_num);
+        //printf("win_add_num: %d\n", win_add_num);
+        //printf("lose_add_num: %d\n", lose_add_num);
+
+        judge.swap(judge_new);
 
         if (win_add_num == 0 && lose_add_num == 0) {
             break;
         }
 
-        judge.swap(judge_new);
         iter_num++;
     }
 
     // 結果を出力
-    printf("---------------------\n", iter_num);
+    printf("---------------------\n");
     printf("size = %ld\n", all_state.size());
-    printf("win_num = %d\n", count[WIN]);
-    printf("lose_num = %d\n", count[LOSE]);
-    printf("unknown_num = %d\n", count[UNKNOWN]);
+    printf("win_num = %ld\n", count[WIN]);
+    printf("lose_num = %ld\n", count[LOSE]);
+    printf("unknown_num = %ld\n", count[UNKNOWN]);
+    printf("iter_num = %ld\n", iter_num);
 
     ofstream ofs1("judge.dat");
     ofs1.write((char *)&judge[0], judge.size()*sizeof(unsigned char));
