@@ -74,6 +74,8 @@ int main(int argc, char *argv[])
             }
         }
     }
+    // ソート
+    sort(all_state.begin(), all_state.end());
 
     fprintf(stderr, "num of all-state = %ld\n", all_state.size());
     ofstream ofs("all-state.dat");
