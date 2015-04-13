@@ -426,7 +426,7 @@ unsigned char get_winorlose(board b, vector<board> &all_state, vector<unsigned c
         // 次の盤面を取得し，反転・正規化
         board nb = get_reverse(next_boards[i]);
         nb = regulate(nb);
-        int index = bin_search(all_state, nb);
+        size_t index = bin_search(all_state, nb);
 
         // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
         if (judge[index] == LOSE) {

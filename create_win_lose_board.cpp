@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     }
 
     // 初期化
-    for (size_t i=0; i<MAX_ITER_NUM; i++) {
+    for (size_t i=0; i<MAX_ITER_STATE_NUM; i++) {
         board b = all_state[i];
         if (is_win_state(b)) {
             judge[i] = WIN;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
             break;
         }
 
-        for (int i=0; i<MAX_ITER_STATE_NUM; i++) {
+        for (size_t i=0; i<MAX_ITER_STATE_NUM; i++) {
             board b = all_state[i];
             if (judge[i] == UNKNOWN) {
                 unsigned char winorlose = get_winorlose(b, all_state, judge);
