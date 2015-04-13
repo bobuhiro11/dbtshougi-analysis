@@ -1,6 +1,8 @@
 /*
  * どうぶつしょうぎにおいて，勝ち確定局面と
  * 負け確定局面を出力する．
+ * all-state_sorted.dat を入力として，judge
+ * .dat と judje_count.dat を出力する．
  */
 #include <sys/types.h>
 #include <sys/stat.h>

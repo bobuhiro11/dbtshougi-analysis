@@ -1,5 +1,8 @@
 /*
  * 末端局面を削除する
+ * all-state.dat を入力し，
+ * all-state_removeend.dat
+ * を出力する．
  */
 #include <sys/types.h>
 #include <sys/stat.h>

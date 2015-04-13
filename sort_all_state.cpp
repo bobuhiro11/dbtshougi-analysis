@@ -1,5 +1,6 @@
 /*
- * 末端局面を含めて all_state.dat を昇順ソートしておく
+ * 末端局面を含めて all-state.dat を昇順ソートしておく
+ * 結果を all-state_sorted.dat に出力する．
  */
 #include <sys/types.h>
 #include <sys/stat.h>
