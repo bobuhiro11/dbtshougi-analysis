@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
                 vector<board> next_boards;
                 get_next_board(next_boards, b);
                 int min = INT_MAX, n=next_boards.size();
-                board nb;
+                board nb = 0;
 
                 for (size_t j=0; j<n; j++) {
                     board nnb = regulate(get_reverse(next_boards[j]));
@@ -70,6 +70,11 @@ int main(int argc, char *argv[])
                         nb = nnb;
                         min = judge_count[index];
                     }
+                }
+
+                if (nb == 0) {
+                    fprintf(stderr, "ERROR: in judge=win, count>0");
+                    exit(1);
                 }
 
                 next_state[i] = nb;
@@ -83,15 +88,20 @@ int main(int argc, char *argv[])
                 vector<board> next_boards;
                 get_next_board(next_boards, b);
                 int max = INT_MIN, n=next_boards.size();
-                board nb;
+                board nb = 0;
 
                 for (size_t j=0; j<n; j++) {
                     board nnb = regulate(get_reverse(next_boards[j]));
                     size_t index = bin_search(all_state, nnb);
-                    if (judge_count[index] < max) {
+                    if (judge_count[index] > max) {
                         nb = nnb;
                         max = judge_count[index];
                     }
+                }
+
+                if (nb == 0) {
+                    fprintf(stderr, "ERROR: in judge=lose, count>0");
+                    exit(1);
                 }
 
                 next_state[i] = nb;
