@@ -198,8 +198,6 @@ board regulate(board b)
     return new_b;
 }
 
-static map<board, unsigned char> win_memo;
-
 /*
  * 勝ち確定局面かどうか
  *
@@ -211,11 +209,6 @@ int is_win_state(board b)
     struct point p;
     vector<struct point> vec_movable;
 
-    if (win_memo.find(b) != win_memo.end()) {
-        // メモにあればそれをつかう
-        return (int)win_memo[b];
-    }
-
     for(i=0;i<HEIGHT;i++) {
         for(j=0;j<WIDTH;j++) {
             get_movable(vec_movable, b, i, j);
@@ -226,15 +219,12 @@ int is_win_state(board b)
     for(i=0;i<n;i++) {
         p = vec_movable[i];
         if (GET_CELL(b,p.y,p.x) == (YOUR_CELL | LION)) {
-            win_memo[b] = 1;
             return 1;
         }
     }
-    win_memo[b] = 0;
     return 0;
 }
 
-static map<board, unsigned char> lose_memo;
 /*
  * 負け確定局面かどうか
  *
@@ -244,23 +234,16 @@ int is_lose_state(board b)
 {
     int j;
 
-    if (lose_memo.find(b) != lose_memo.end()) {
-        // メモにあればそれをつかう
-        return (int)lose_memo[b];
-    }
 
     if (is_win_state(b)) {
-        lose_memo[b] = 0;
         return 0;
     }
 
     for(j=0;j<WIDTH;j++) {
         if (GET_CELL(b,HEIGHT-1,j) == (YOUR_CELL | LION)) {
-            lose_memo[b] = 1;
             return 1;
         }
     }
-    lose_memo[b] = 0;
     return 0;
 }
 
@@ -446,9 +429,9 @@ unsigned char get_winorlose(board b, vector<board> &all_state, vector<unsigned c
         int index = bin_search(all_state, nb);
 
         // 次の局面の内少なくとも１つが負け局面になるなら，今の局面は勝ち局面
-        if (judge[index] == LOSE || is_lose_state(nb)) {
+        if (judge[index] == LOSE) {
             return WIN;
-        } else if (judge[index] == WIN || is_win_state(nb)) {
+        } else if (judge[index] == WIN) {
         } else if (judge[index] == UNKNOWN) {
             all_win = false;
         } else {

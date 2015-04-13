@@ -9,4 +9,5 @@
 
 cd $PBS_O_WORKDIR # qsubを実行したディレクトリへ移動
 
-g++ create_win_lose_board.cpp common.cpp && ./a.out
+g++ create_win_lose_board.cpp common.cpp
+./a.out >> create_win_lose_board.log

@@ -25,31 +25,26 @@ int main(int argc, char *argv[])
     unsigned long file_size, all_state_num, iter_num;
     vector<board> all_state;
 
-    // 勝敗判定の結果，INDEXは all_state 内の局面の位置
-    vector<unsigned char> judge;
-
-    // 勝敗判定が着くまでの手数
-    vector<unsigned char> judge_count;
-
     uint64_t count[4] = {-1,0,0,0};
+    uint64_t count4created[4] = {-1,0,0,0};
     iter_num = 1;
 
+    printf("program started.\n");
 
-    // 全ての局面（末端局面を除く） all-state_removeend.dat の読込
-    file_size     = get_file_size("all-state_removeend.dat");
+    // 全ての局面 all-state_sorted.dat の読込
+    file_size     = get_file_size("all-state_sorted.dat");
     all_state_num = file_size / sizeof(board);
     all_state.resize(all_state_num);
-    ifstream ifs("all-state_removeend.dat");
+    ifstream ifs("all-state_sorted.dat");
     ifs.read((char*)&all_state[0], all_state.size() * sizeof(board));
 
-    judge.resize(all_state_num);
-    judge_count.resize(all_state_num);
+    printf("read all-state_sorted\n");
 
-    for (int i=0; i<all_state_num; i++) {
-        judge[i] = UNKNOWN;
-        judge_count[i] = 0;
-        count[UNKNOWN]++;
-    }
+    // 勝敗判定の結果，INDEXは all_state 内の局面の位置
+    vector<unsigned char> judge(all_state_num,0);
+
+    // 勝敗判定が着くまでの手数
+    vector<unsigned char> judge_count(all_state_num,0);
 
     // 繰り返し操作の上限
     unsigned long MAX_ITER_NUM = 0;
@@ -59,6 +54,24 @@ int main(int argc, char *argv[])
         MAX_ITER_STATE_NUM = atoi(argv[2]);
     }
 
+    // 初期化
+    for (size_t i=0; i<MAX_ITER_NUM; i++) {
+        board b = all_state[i];
+        if (is_win_state(b)) {
+            judge[i] = WIN;
+            count[WIN]++;
+        } else if (is_lose_state(b)) {
+            judge[i] = LOSE;
+            count[LOSE]++;
+        } else {
+            judge[i] = UNKNOWN;
+            count[UNKNOWN]++;
+        }
+        judge_count[i] = 0;
+    }
+
+
+    printf("begin create win lose baord\n");
 
     // 繰り返し勝敗データを更新していく
     for(;;) {
@@ -92,10 +105,15 @@ int main(int argc, char *argv[])
             }
         }
 
-        //printf("---------------------\n");
-        //printf("iter_num: %ld\n", iter_num);
-        //printf("win_add_num: %d\n", win_add_num);
-        //printf("lose_add_num: %d\n", lose_add_num);
+        count4created[LOSE] += lose_add_num;
+        count4created[WIN]  += win_add_num;
+
+        printf("---------------------\n");
+        printf("iter_num: %ld\n", iter_num);
+        printf("win_add_num: %d\n", win_add_num);
+        printf("lose_add_num: %d\n", lose_add_num);
+        printf("count4created[win] = %ld\n", count4created[WIN]);
+        printf("count4created[lose] = %ld\n", count4created[LOSE]);
 
         judge.swap(judge_new);
 
@@ -111,6 +129,8 @@ int main(int argc, char *argv[])
     printf("size = %ld\n", all_state.size());
     printf("win_num = %ld\n", count[WIN]);
     printf("lose_num = %ld\n", count[LOSE]);
+    printf("count4created[win] = %ld\n", count4created[WIN]);
+    printf("count4created[lose] = %ld\n", count4created[LOSE]);
     printf("unknown_num = %ld\n", count[UNKNOWN]);
     printf("iter_num = %ld\n", iter_num);
 
