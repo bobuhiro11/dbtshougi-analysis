@@ -57,7 +57,9 @@ if (isset($_GET['board'])) {
 }
 $next = (int)get_next_abin($p);
 
-if ($next == -1) {
+if ($next == -1 || $next == 0) {
     header("HTTP/1.0 404 Not Found");
+    echo "-1\n";
+} else {
+    echo $next."\n";
 }
-echo $next."\n";
