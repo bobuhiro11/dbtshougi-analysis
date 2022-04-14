@@ -7,7 +7,7 @@
 # ジュブスケジューラ TORQUE を使うためのスクリプト
 #
 
-cd $PBS_O_WORKDIR # qsubを実行したディレクトリへ移動
+#cd $PBS_O_WORKDIR # qsubを実行したディレクトリへ移動
 
 g++ create_all_board.cpp common.cpp
-./a.out 300
+./a.out 2147483647

@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     unsigned long file_size, all_state_num, iter_num;
     vector<board> all_state;
 
-    uint64_t count[4] = {-1,0,0,0};
-    uint64_t count4created[4] = {-1,0,0,0};
+    uint64_t count[4] = {0,0,0,0};
+    uint64_t count4created[4] = {0,0,0,0};
     iter_num = 1;
 
     printf("program started.\n");
